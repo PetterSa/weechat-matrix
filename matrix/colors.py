@@ -665,7 +665,7 @@ class MatrixHtmlParser(HTMLParser):
             self.text = "\n"
             self.add_substring(self.text, DEFAULT_ATTRIBUTES.copy())
             self.text = ""
-        elif tag == "font":
+        elif tag == "font" or tag == "span":
             for key, value in attrs:
                 if key in ["data-mx-color", "color"]:
                     color = color_html_to_weechat(value)
@@ -687,6 +687,14 @@ class MatrixHtmlParser(HTMLParser):
                         self.add_substring(self.text, self.attributes.copy())
                     self.text = ""
                     self.attributes["bgcolor"] = color
+
+                elif key in ["data-mx-spoiler"]:
+                    color = color_html_to_weechat("black")
+                    if self.text:
+                        self.add_substring(self.text, self.attributes.copy())
+                    self.text = ""
+                    self.attributes["bgcolor"] = color
+                    self.attributes["fgcolor"] = color
 
         else:
             pass
@@ -712,11 +720,12 @@ class MatrixHtmlParser(HTMLParser):
             self.text = "\n"
             self.add_substring(self.text, DEFAULT_ATTRIBUTES.copy())
             self.text = ""
-        elif tag == "font":
+        elif tag == "font" or tag == "span":
             if self.text:
                 self.add_substring(self.text, self.attributes.copy())
             self.text = ""
             self.attributes["fgcolor"] = None
+            self.attributes["bgcolor"] = None
         else:
             pass
 
